@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   background: #c811bc;
-  border-radius: 4px 4px 0 0;
+  border-radius: 15px 15px 0 0;
   height: 60px;
   width: 100%;
 }
@@ -25,4 +25,11 @@
 
 .onlineicon {
   margin-right: 5%;
+}
+
+
+@media (min-width: 320px) and (max-width: 480px) {
+  .infoBar {
+    border-radius: 0;
+  }
 }

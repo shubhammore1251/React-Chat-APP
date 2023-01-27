@@ -1,0 +1,34 @@
+.footer{
+    background-color: #1a1a1d;
+    margin-top: -75px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.footer-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+.footer-text{
+    margin-right: 10px;
+}
+
+.footer-icons{
+    color: #c811bc;
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.footer-icons span{
+    color: #fff;
+}
+
+
+
+@media (min-width: 320px) and (max-width: 480px) {
+    .footer{
+        display: none;
+    }
+}

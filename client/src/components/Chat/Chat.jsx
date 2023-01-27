@@ -7,22 +7,24 @@ import "./Chat.css";
 import InfoBar from "../InfoBar/InfoBar";
 import InputBox from "../InputBox/InputBox";
 import Messages from "../Messages/Messages";
-import TextContainer from "../TextContainer/TextContainer";
 
-// const ENDPOINT = 'localhost:5000';
+import loader from "../../assests/images/loader.svg"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 let socket;
 
 const Chat = () => {
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
-  const [users, setUsers] = useState('');
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-
+  
   const location = useLocation();
-  const ENDPOINT = "localhost:5000";
+  const ENDPOINT = process.env.REACT_APP_CHAT_SERVER;
 
+  const notify = (message) => toast.error(message);
+  
   useEffect(() => {
     const { name, room } = queryString.parse(location.search);
 
@@ -31,8 +33,10 @@ const Chat = () => {
     setName(name);
     setRoom(room);
 
-    socket.emit('join', { name, room }, () => {
-     
+    socket.emit('join', { name, room }, (error) => {
+      if (error) {
+        notify(error)
+      }
     });
 
     return () => {
@@ -40,7 +44,7 @@ const Chat = () => {
       socket.off();
     }
 
-  }, [location.search]);
+  }, [ENDPOINT,location.search]);
 
 
 
@@ -48,12 +52,9 @@ const Chat = () => {
     socket.on('message', (message) => {
       setMessages([...messages, message]);
     });
-    
-    socket.on('roomData', ({users}) => {
-      setUsers(users);
-    });
-
+  
   }, [messages]);
+   
 
   const sendMessage = (event) => {
     event.preventDefault();
@@ -63,21 +64,36 @@ const Chat = () => {
     }
   };
 
-  console.log(message, messages);
-  
 
   return (
+    
     <div className="chat-container">
+    {messages.length>0 ? 
       <div className="inner-chat-container">
         <InfoBar room={room}/>
-
+        
         <Messages messages={messages} name={name}/>
         
         <InputBox message={message} setMessage={setMessage} sendMessage={sendMessage}/>
       </div>
+     :
+     <img src={loader} alt="loader" />
+    }
 
-      <TextContainer users={users}/>
+      <ToastContainer
+      position="top-left"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+      />
     </div>
+ 
   );
 };
 
