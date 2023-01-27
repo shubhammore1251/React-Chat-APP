@@ -1,6 +1,6 @@
 # Realtime Chatrooms
 
-![Logo](/client/src/assests/images/r_chat.png)
+![Logo](/client/public/r_chat.png)
 
 - Hosted App Link - <https://realtime-chatroomss.netlify.app>
 
