@@ -15,7 +15,6 @@
 **Back-End:**
 
 - **Node**
-- **Express**
 - **Socket.io**
 
 **Npm Packages:**
