@@ -5,7 +5,6 @@ const errorMiddleware = require("./middleware/error");
 const logger = require("morgan");
 const cors = require("cors");
 const { rateLimit } = require('express-rate-limit');
-const { CronJob } = require("cron");
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./user");
 
 require("dotenv").config({ path: "./.env" });
