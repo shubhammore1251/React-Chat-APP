@@ -1,6 +1,7 @@
 const express = require("express");
 const socketio = require("socket.io");
 const http = require("http");
+const errorMiddleware = require("./middleware/error");
 const logger = require("morgan");
 const cors = require("cors");
 const { rateLimit } = require('express-rate-limit');
@@ -10,13 +11,15 @@ const { addUser, removeUser, getUser, getUsersInRoom } = require("./user");
 require("dotenv").config({ path: "./.env" });
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 const router = require("./router");
 
 const app = express();
-const server = http.createServer(app);
-const io = socketio(server, {
+
+const socket_server = http.createServer(app);
+
+const io = socketio(socket_server, {
   cors: {
     origin: "*",
   },
@@ -95,18 +98,26 @@ io.on("connect", (socket) => {
   });
 });
 
-const serverUrl = process.env.NODE_ENV === 'PRODUCTION' ? process.env.PRODUCTION_URL : process.env.LOCAL_URL;
-
-const job = CronJob.from({
-	cronTime: '*/10 * * * *',
-	onTick: function () {
-		console.log(`CRON JOB EXECUTED TO KEEP SERVER ALIVE - ${new Date()}`); 
-	},
-	start: true,
-	timeZone: 'Asia/Kolkata'
+//Handling Uncaught exceptions
+process.on("uncaughtException", (err) => {
+  console.log(`Error: ${err.message}`);
+  console.log("shutting down the server due to uncaught Exception");
+  process.exit(1);
 });
 
 
-server.listen(PORT, () => {
-  console.log(`Server Listening on ${PORT}`);
+const server = app.listen(process.env.PORT, () => {
+  console.log(`Server listening on port http://localhost:${process.env.PORT}`);
 });
+
+// Unhandled Promise Rejection
+process.on("unhandledRejection", (err) => {
+  console.log(`Error: ${err.message}`);
+  console.log("shutting down the server due to unhadled promise rejection");
+
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
+app.use(errorMiddleware);
