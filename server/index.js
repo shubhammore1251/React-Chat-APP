@@ -5,7 +5,6 @@ const logger = require("morgan");
 const cors = require("cors");
 const { rateLimit } = require('express-rate-limit');
 const { CronJob } = require("cron");
-const { default: axios } = require("axios");
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./user");
 
 require("dotenv").config({ path: "./.env" });
@@ -23,7 +22,8 @@ const io = socketio(server, {
   },
 });
 
-
+// Enable trust proxy
+app.set('trust proxy', 1);
 // Rate limiting middleware
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000,
@@ -99,13 +99,8 @@ const serverUrl = process.env.NODE_ENV === 'PRODUCTION' ? process.env.PRODUCTION
 
 const job = CronJob.from({
 	cronTime: '*/10 * * * *',
-	onTick: async function () {
-		try {
-      await axios.get(`${serverUrl}/keep-alive`);
-      console.log('Keep-alive request sent');
-    } catch (error) {
-      console.error('Error sending keep-alive request:', error);
-    }
+	onTick: function () {
+		console.log(`CRON JOB EXECUTED TO KEEP SERVER ALIVE - ${new Date()}`); 
 	},
 	start: true,
 	timeZone: 'Asia/Kolkata'
