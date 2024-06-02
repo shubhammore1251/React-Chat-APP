@@ -1,9 +1,15 @@
 const express = require("express");
 const socketio = require("socket.io");
 const http = require("http");
-const cors = require('cors');
-
+const logger = require("morgan");
+const cors = require("cors");
+const { rateLimit } = require('express-rate-limit');
+const { CronJob } = require("cron");
+const { default: axios } = require("axios");
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./user");
+
+require("dotenv").config({ path: "./.env" });
+
 
 const PORT = process.env.PORT || 5000;
 
@@ -17,6 +23,21 @@ const io = socketio(server, {
   },
 });
 
+
+// Rate limiting middleware
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  limit: 1000,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: {
+    message: "Too many requests from this IP, please try again after a minute",
+    status: 429
+  }
+});
+
+app.use(limiter);
+app.use(logger("dev"));
 app.use(cors());
 app.use(router);
 
@@ -73,6 +94,23 @@ io.on("connect", (socket) => {
     }
   });
 });
+
+const serverUrl = process.env.NODE_ENV === 'PRODUCTION' ? process.env.PRODUCTION_URL : process.env.LOCAL_URL;
+
+const job = CronJob.from({
+	cronTime: '*/10 * * * *',
+	onTick: async function () {
+		try {
+      await axios.get(`${serverUrl}/keep-alive`);
+      console.log('Keep-alive request sent');
+    } catch (error) {
+      console.error('Error sending keep-alive request:', error);
+    }
+	},
+	start: true,
+	timeZone: 'Asia/Kolkata'
+});
+
 
 server.listen(PORT, () => {
   console.log(`Server Listening on ${PORT}`);
