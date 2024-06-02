@@ -1,4 +1,4 @@
-const ErrorHandler = require("../../erroHandler");
+const ErrorHandler = require("../erroHandler");
 const catchAsyncErrors = require("./catchAsyncErrors");
 
 // Middleware function to check secret_token header and perform authentication
