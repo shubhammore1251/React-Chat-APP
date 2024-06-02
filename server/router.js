@@ -12,7 +12,10 @@ router.get(
   checkAuth,
   catchAsyncErrors((req, res) => {
     console.log(`server kept awake - ${new Date()}`);
-    res.send(`server kept awake - ${new Date()}`);
+    res.status(200).json({
+      success: true,
+      message: `server kept awake - ${new Date()}`,
+    });
   })
 );
 

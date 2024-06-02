@@ -1,5 +1,6 @@
 const ErrorHandler = require("../erroHandler");
 const catchAsyncErrors = require("./catchAsyncErrors");
+const bcrypt = require("bcryptjs");
 
 // Middleware function to check secret_token header and perform authentication
 exports.checkAuth = catchAsyncErrors((req, res, next) => {
