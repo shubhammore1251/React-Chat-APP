@@ -16,9 +16,9 @@ const router = require("./router");
 
 const app = express();
 
-const socket_server = http.createServer(app);
+const server = http.createServer(app);
 
-const io = socketio(socket_server, {
+const io = socketio(server, {
   cors: {
     origin: "*",
   },
@@ -105,8 +105,8 @@ process.on("uncaughtException", (err) => {
 });
 
 
-const server = app.listen(process.env.PORT, () => {
-  console.log(`Server listening on port http://localhost:${process.env.PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server listening on port http://localhost:${PORT}`);
 });
 
 // Unhandled Promise Rejection
